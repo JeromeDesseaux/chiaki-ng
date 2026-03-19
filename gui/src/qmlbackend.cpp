@@ -872,6 +872,8 @@ void QmlBackend::createSession(const StreamSessionConnectInfo &connect_info)
             setDiscoveryEnabled(false);
     });
 
+    const bool has_saved_geometry = !settings->GetGeometry().isEmpty();
+
     if (window->windowState() != Qt::WindowFullScreen)
     {
         if(settings->GetWindowType() == WindowType::CustomResolution)
@@ -886,7 +888,8 @@ void QmlBackend::createSession(const StreamSessionConnectInfo &connect_info)
                 window->setGeometry(settings->GetStreamGeometry());
         }
         else
-            window->resize(connect_info.video_profile.width, connect_info.video_profile.height);
+            if(!has_saved_geometry)
+                window->resize(connect_info.video_profile.width, connect_info.video_profile.height);
     }
 
     chiaki_log_mutex.lock();

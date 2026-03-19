@@ -148,6 +148,7 @@ private:
     bool handleShortcut(QKeyEvent *event);
     bool event(QEvent *event) override;
     QObject *focusObject() const override;
+    void persistGeometry();
 
     bool has_video = false;
     struct pl_queue_params qparams;

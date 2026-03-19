@@ -863,6 +863,7 @@ renderer_backend_ready:
 
     backend = new QmlBackend(settings, this);
     connect(backend, &QmlBackend::sessionChanged, this, [this, exit_app_on_stream_exit](StreamSession *s) {
+        bool had_session = session != nullptr;
         session = s;
         grab_input = 0;
         if (session)
@@ -880,6 +881,10 @@ renderer_backend_ready:
         if(session && exit_app_on_stream_exit)
         {
             connect(session, &StreamSession::SessionQuit, qGuiApp, &QGuiApplication::quit);
+        }
+        if(!session && had_session)
+        {
+            persistGeometry();
         }
         if(!session)
         {
@@ -1838,4 +1843,19 @@ bool QmlMainWindow::event(QEvent *event)
 QObject *QmlMainWindow::focusObject() const
 {
     return quick_window->focusObject();
+}
+
+void QmlMainWindow::persistGeometry()
+{
+    if (!settings)
+        return;
+
+    if (windowState() == Qt::WindowFullScreen)
+        return;
+
+    QRect current_geometry = geometry();
+    if (current_geometry.isEmpty())
+        return;
+
+    settings->SetGeometry(current_geometry);
 }
